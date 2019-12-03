@@ -30,7 +30,17 @@ void affichage(int m[8][8]) {
 		printf("|");
 		for (int j = 0; j < 8; ++j)
 		{
-			printf("\033[34m %d \033[0m|", m[i][j]);
+			if (m[i][j] == VIDE)
+			{
+				printf("\033[30m %d \033[0m|", m[i][j]);
+			} else if (m[i][j] == BLANC)
+			{
+				printf("\033[31m %d \033[0m|", m[i][j]);
+			} else if (m[i][j] == NOIR)
+			{
+				printf("\033[32m %d \033[0m|", m[i][j]);
+			}
+			
 		}
 		printf("\n");
 		for (int k = 0; k < 33; ++k)
@@ -108,7 +118,7 @@ int verif(int l, int c, int m[8][8], int joueur) {
     	return 1;
     }
 
-    // on test la verticale de haut en bas et gauche droite
+    // on test la diago de haut en bas et gauche droite
 	i = l + 1;
 	j = c + 1;
     ok = 0;
@@ -120,7 +130,7 @@ int verif(int l, int c, int m[8][8], int joueur) {
     if (case_valide(i, j) && m[i][j] == jou && ok == 1) {
     	return 1;
     }
-    // on test la verticale de bas en haut et gauche droite
+    // on test la diago de bas en haut et gauche droite
 	i = l + 1;
 	j = c - 1;
     ok = 0;
@@ -133,7 +143,7 @@ int verif(int l, int c, int m[8][8], int joueur) {
     	return 1;
     }
 
-    // on test la verticale de bas en haut et droite gauche
+    // on test la diago de bas en haut et droite gauche
 	i = l - 1;
 	j = c - 1;
     ok = 0;
@@ -146,7 +156,7 @@ int verif(int l, int c, int m[8][8], int joueur) {
     	return 1;
     }
 
-    // on test la verticale de haut en bas et droite gauche
+    // on test la diago de haut en bas et droite gauche
 	i = l - 1;
 	j = c + 1;
     ok = 0;
@@ -224,19 +234,19 @@ void remplissage(int m[8][8], int l, int c, int joueur) {
     }
 
    //diagonale droite à gauche Haut bas
-    j = l + 1;
-    i = c - 1;
-    while (case_valide(j, i) && m[j][i] == adv) {
-    	i--;
-    	j++;
+    i = l + 1;
+    j = c - 1;
+    while (case_valide(i, j) && m[i][j] == adv) {
+    	j--;
+    	i++;
     }
-    if (case_valide(j, i) && m[j][i] == jou) {
-        i = c - 1;
-        j = l + 1;
-        while (m[j][i] == adv) {
-            m[l][i] = jou;
-            i--;
-            j++;
+    if (case_valide(i, j) && m[i][j] == jou) {
+        j = c - 1;
+        i = l + 1;
+        while (m[i][j] == adv) {
+            m[i][j] = jou;
+            j--;
+            i++;
         }
     }
     //diagonale droite à gauche Bas Haut
@@ -250,7 +260,7 @@ void remplissage(int m[8][8], int l, int c, int joueur) {
         i = c - 1;
         j = l - 1;
         while (m[j][i] == adv) {
-            m[l][i] = jou;
+            m[j][i] = jou;
             i--;
             j--;
         }
@@ -266,7 +276,7 @@ void remplissage(int m[8][8], int l, int c, int joueur) {
         i = c + 1;
         j = l + 1;
         while (m[j][i] == adv) {
-            m[l][i] = jou;
+            m[j][i] = jou;
             i++;
             j++;
         }
@@ -282,7 +292,7 @@ void remplissage(int m[8][8], int l, int c, int joueur) {
         i = c + 1;
         j = l - 1;
         while (m[j][i] == adv) {
-            m[l][i] = jou;
+            m[j][i] = jou;
             i++;
             j--;
         }
@@ -291,21 +301,54 @@ void remplissage(int m[8][8], int l, int c, int joueur) {
 
 }
 
+int next(int joueur) {
+	return (joueur%2 +1);
+}
+
+int termine(int m[8][8]) {
+	for (int i = 0; i < 8; ++i)
+	{
+		for (int j = 0; j < 8; ++j)
+		{
+			if (m[i][j] == 0 || verif(i,j,m,1) || verif(i,j,m,2))
+			{
+				return 0;
+			}
+		}
+	}
+	return 1;
+}
+
 int main(int argc, char const *argv[])
 {
-	int pions[8][8], fin=0, ligne;
-	int colonne;
+	int pions[8][8], fin=0, ligne, colonne, joueur=1, ok = 0;
 
 	init(pions);
 
-	affichage(pions);
-
 	while (!fin) {
-		printf("J1 : Choisissez une position (exemple : A1)\n");
-		scanf("%d %d", &colonne, &ligne);
-		remplissage(pions,colonne,ligne,1);
 		affichage(pions);
+		while (!ok) {
+			printf("J%d : Choisissez une case (exemple : 1 1)\n", joueur);
+			scanf("%d %d", &colonne, &ligne);
+			if (verif(ligne,colonne,pions,joueur))
+			{
+				remplissage(pions,colonne,ligne,joueur);
+				ok = 1;
+				joueur = next(joueur);
+
+			} else {
+				printf("Erreur, choisissez une autre case\n");
+			}
+		}
+		ok = 0;
+
+		if (termine(pions))
+		{
+			fin = 1;
+		}
 	}
+	printf("Fin de la partie\n");
+
 
 	
 
