@@ -21,14 +21,26 @@ void init(int m[8][8]) {
 }
 
 void affichage(int m[8][8]) {
-	for (int k = 0; k < 33; ++k)
+  int c = 0;
+  int range = 0;
+  printf(" ");
+  for (int g = 0; g<8; g++){
+    printf("  %d ",c);
+    c++;
+  }
+  printf("\n ",c);
+  for (int k = 0; k < 33; ++k)
 	{
-		printf("-");
+	  printf("-");
 	}
 	printf("\n");
+	
 	for (int i = 0; i < 8; ++i)
-	{
-		printf("|");
+	  {
+
+	  printf("%d",range);
+	  range++;
+	    printf("|");
 		for (int j = 0; j < 8; ++j)
 		{
 			if (m[i][j] == VIDE)
@@ -43,7 +55,7 @@ void affichage(int m[8][8]) {
 			}
 			
 		}
-		printf("\n");
+		printf("\n ");
 		for (int k = 0; k < 33; ++k)
 		{
 			printf("-");
@@ -329,7 +341,7 @@ int main(int argc, char const *argv[])
 	while (!fin) {
 		affichage(pions);
 		while (!ok) {
-			printf("J%d : Choisissez une case (exemple : 1 1)\n", joueur);
+			printf("J%d : Choisissez une case (exemple : ligne puis colonne)\n", joueur);
 			scanf("%d %d", &ligne, &colonne);
 			if (verif(ligne,colonne,pions,joueur))
 			{
